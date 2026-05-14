@@ -11,34 +11,44 @@
 <style>
 :root{--bg:#0a0c0f;--sur:#111418;--sur2:#181c22;--bor:#252a32;--bor2:#2e3440;--gold:#c8a96e;--gold2:#e8c98e;--red:#e05252;--green:#4caf7d;--blue:#4a90d9;--text:#e8eaf0;--muted:#6b7280;--dim:#3d4452;}
 *{box-sizing:border-box;margin:0;padding:0;}
-html,body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;font-size:14px;line-height:1.5;height:100%;overflow:hidden;}
+html,body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;min-height:100vh;}
 .mono{font-family:'JetBrains Mono',monospace;}
+.serif{font-family:'Noto Serif TC',serif;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--bor2);border-radius:10px;}
 
 /* Layout */
-.app-wrapper{display:flex;flex-direction:column;height:100vh;background-image:radial-gradient(circle at 50% 0%, #161a22 0%, #0a0c0f 100%);}
-header{flex-shrink:0;height:60px;background:#000;border-bottom:1px solid var(--bor);display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:100;}
-main{flex:1;display:flex;overflow:hidden;padding:20px;gap:20px;}
-
-/* Columns */
-.col-input{flex:1;display:flex;flex-direction:column;gap:15px;min-width:0;}
-.col-output{width:480px;display:flex;flex-direction:column;gap:15px;flex-shrink:0;}
-.card{background:var(--sur);border:1px solid var(--bor);border-radius:8px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 15px 35px rgba(0,0,0,0.4);}
-.card-header{padding:12px 18px;background:var(--sur2);border-bottom:1px solid var(--bor);display:flex;align-items:center;justify-content:space-between;}
-.card-label{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:1px;text-transform:uppercase;}
-
-textarea{flex:1;background:transparent;border:none;color:#fff;padding:20px;font-size:15px;line-height:1.7;resize:none;outline:none;}
-#resultArea{flex:1;overflow-y:auto;padding:20px;background-image:linear-gradient(to bottom, transparent, rgba(0,0,0,0.1));}
+.app-wrapper{display:flex;height:100vh;overflow:hidden;}
+.sidebar{width:420px;background:var(--sur);border-right:1px solid var(--bor);display:flex;flex-direction:column;flex-shrink:0;}
+.main-view{flex:1;background:var(--bg);display:flex;flex-direction:column;min-width:0;}
 
 /* API Modal */
-#apiModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(10px);}
-.modal-content{background:var(--sur);border:1px solid var(--gold);padding:30px;border-radius:8px;width:400px;text-align:center;}
+#apiModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(8px);}
+.modal-content{background:var(--sur);border:1px solid var(--gold);padding:30px;border-radius:10px;width:380px;text-align:center;box-shadow:0 0 50px rgba(0,0,0,0.8);}
 .modal-input{width:100%;padding:12px;margin:15px 0;background:#000;border:1px solid var(--bor);color:var(--gold2);border-radius:4px;outline:none;}
 
-.btn-ai{background:linear-gradient(135deg, #b8944a, #c8a96e);color:#000;border:none;padding:16px;font-weight:900;font-size:15px;border-radius:4px;cursor:pointer;width:100%;transition:0.2s;}
-.btn-ai:hover{filter:brightness(1.1);transform:translateY(-1px);}
+/* Sidebar Components */
+header{padding:24px;border-bottom:1px solid var(--bor);background-image:linear-gradient(to bottom, #1a1d22, transparent);}
+.input-group{flex:1;padding:24px;display:flex;flex-direction:column;gap:15px;overflow-y:auto;}
+textarea{width:100%;height:220px;background:rgba(0,0,0,0.3);border:1px solid var(--bor2);color:var(--text);padding:15px;border-radius:8px;font-size:15px;line-height:1.7;resize:none;outline:none;transition:0.3s;}
+textarea:focus{border-color:var(--gold);background:rgba(0,0,0,0.5);}
 
-.loader{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--muted);gap:15px;}
-.spin{width:24px;height:24px;border:2px solid var(--bor);border-top-color:var(--gold);border-radius:50%;animation:s 0.8s infinite linear;}
+.btn-run{background:linear-gradient(135deg,#b8944a,#c8a96e);color:#0a0c0f;border:none;padding:16px;border-radius:8px;font-weight:900;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 10px 25px rgba(200,169,110,0.15);transition:0.3s;}
+.btn-run:hover{transform:translateY(-2px);filter:brightness(1.1);}
+.btn-run:disabled{filter:grayscale(1);opacity:0.5;cursor:not-allowed;}
+
+/* Analysis View Grid */
+.analysis-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:1px;background:var(--bor);height:100%;}
+.analysis-cell{background:var(--bg);overflow-y:auto;display:flex;flex-direction:column;}
+.cell-header{padding:12px 18px;background:var(--sur);border-bottom:1px solid var(--bor2);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+.cell-title{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:1px;text-transform:uppercase;}
+
+/* Results UI */
+.fade-up{animation:fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.loader{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--dim);gap:15px;}
+.spin{width:20px;height:20px;border:2px solid var(--bor);border-top-color:var(--gold);border-radius:50%;animation:s 1s infinite linear;}
 @keyframes s{to{transform:rotate(360deg)}}
 </style>
 </head>
@@ -46,127 +56,129 @@ textarea{flex:1;background:transparent;border:none;color:#fff;padding:20px;font-
 
 <div id="apiModal">
     <div class="modal-content">
-        <p style="color:var(--gold);font-weight:900;margin-bottom:10px;">🛡️ 司法警察系統驗證</p>
-        <p style="font-size:12px;color:var(--muted);">請輸入 Groq API Key 以啟用 114年資安法規分析</p>
+        <p class="serif" style="color:var(--gold);font-size:18px;margin-bottom:10px;">🛡️ 司法警察系統驗證</p>
+        <p style="font-size:12px;color:var(--muted);">請輸入 Groq API Key 以啟用 114年資安新規分析</p>
         <input type="password" id="keyInput" class="modal-input" placeholder="gsk_...">
-        <button class="btn-ai" onclick="saveKey()">儲存並開啟系統</button>
+        <button class="btn-run" style="width:100%;" onclick="saveKey()">儲存並啟動系統</button>
     </div>
 </div>
 
 <div class="app-wrapper">
-    <header>
-        <div style="display:flex;align-items:center;gap:15px;">
-            <div style="width:32px;height:32px;background:var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;">憲</div>
-            <div>
-                <h1 style="font-size:16px;font-weight:900;letter-spacing:1px;">智慧偵詢分析系統 <span style="font-size:10px;color:var(--muted);margin-left:5px;">V4.5 (實戰整合版)</span></h1>
-                <p class="mono" style="font-size:9px;color:var(--gold);letter-spacing:2px;opacity:0.8;">MILITARY POLICE AI INTELLIGENCE</p>
-            </div>
-        </div>
-        <button onclick="resetKey()" style="background:none;border:1px solid var(--bor);color:var(--muted);font-size:10px;padding:4px 8px;border-radius:4px;cursor:pointer;">重設 API Key</button>
-    </header>
-
-    <main>
-        <div class="col-input">
-            <div class="card" style="flex:1;">
-                <div class="card-header">
-                    <span class="card-label">Evidence & Case Summary / 案情摘要與筆錄</span>
-                </div>
-                <textarea id="userInput" placeholder="請在此輸入詢問紀錄、資安違規事由或案情摘要..."></textarea>
-                <div style="padding:15px;background:rgba(0,0,0,0.3);border-top:1px solid var(--bor);">
-                    <button class="btn-ai" id="runBtn" onclick="runAnalysis()">✦ 執行 AI 法律構成要件鑑定</button>
+    <aside class="sidebar">
+        <header>
+            <div style="display:flex;align-items:center;gap:15px;margin-bottom:20px;">
+                <div style="width:36px;height:36px;background:var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:18px;">憲</div>
+                <div>
+                    <h1 class="serif" style="font-size:18px;font-weight:900;letter-spacing:1px;">智慧偵詢分析系統</h1>
+                    <p class="mono" style="font-size:9px;color:var(--gold);letter-spacing:2px;opacity:0.7;">TAIPEI MILITARY POLICE</p>
                 </div>
             </div>
-        </div>
+            <p style="font-size:12px;color:var(--muted);line-height:1.6;">整合 114年資通安全獎懲規定、國防部組織法、退撫基金繳費規定之實戰鑑定系統。</p>
+        </header>
 
-        <div class="col-output">
-            <div class="card" style="flex:1;">
-                <div class="card-header">
-                    <span class="card-label">Comprehensive Analysis / 深度鑑定報告</span>
-                </div>
-                <div id="resultArea">
-                    <div class="loader"><p style="font-size:12px;">等待資料輸入中...</p></div>
-                </div>
-                <div style="padding:15px;background:var(--sur2);border-top:1px solid var(--bor);">
-                    <button class="btn-ai" style="padding:10px;font-size:12px;" onclick="exportWord()">匯出鑑定報告 (.docx)</button>
-                </div>
+        <div class="input-group">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span class="mono" style="font-size:10px;color:var(--dim);">CASE_INPUT_V4.5</span>
+                <button onclick="resetKey()" style="background:none;border:none;color:var(--dim);font-size:10px;cursor:pointer;">重設 API Key</button>
+            </div>
+            <textarea id="userInput" placeholder="請貼入詢問紀錄、案情摘要或違紀事實..."></textarea>
+            <button class="btn-run" id="runBtn" onclick="runAnalysis()">
+                <span id="btnText">啟動 AI 法律與資安分析</span>
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-view">
+        <div class="analysis-grid">
+            <div class="analysis-cell">
+                <div class="cell-header"><span class="cell-title">▸ 偵詢策略與焦點建議</span></div>
+                <div id="panel1" class="loader"><p style="font-size:12px;">等待資料輸入...</p></div>
+            </div>
+            <div class="analysis-cell">
+                <div class="cell-header"><span class="cell-title">▸ 法律與行政獎懲鑑定</span></div>
+                <div id="panel2" class="loader"><p style="font-size:12px;">等待資料輸入...</p></div>
+            </div>
+            <div class="analysis-cell">
+                <div class="cell-header"><span class="cell-title">▸ 指導程序與作業限期</span></div>
+                <div id="panel3" class="loader"><p style="font-size:12px;">等待資料輸入...</p></div>
+            </div>
+            <div class="analysis-cell">
+                <div class="cell-header"><span class="cell-title">▸ 證據清單與移送建議</span></div>
+                <div id="panel4" class="loader"><p style="font-size:12px;">等待資料輸入...</p></div>
             </div>
         </div>
     </main>
 </div>
 
 <script>
-let savedApiKey = localStorage.getItem('groq_api_key');
-
-window.onload = () => { if (!savedApiKey) document.getElementById('apiModal').style.display = 'flex'; };
-
+let savedKey = localStorage.getItem('groq_api_key');
+window.onload = () => { if (!savedKey) document.getElementById('apiModal').style.display = 'flex'; };
 function saveKey() {
-    const key = document.getElementById('keyInput').value.trim();
-    if (key.startsWith('gsk_')) {
-        localStorage.setItem('groq_api_key', key);
-        savedApiKey = key;
-        document.getElementById('apiModal').style.display = 'none';
-        alert("API Key 儲存成功！");
-    } else { alert("Key 格式錯誤，請重新確認。"); }
+    const k = document.getElementById('keyInput').value.trim();
+    if (k.startsWith('gsk_')) { localStorage.setItem('groq_api_key', k); savedKey = k; document.getElementById('apiModal').style.display = 'none'; }
+    else { alert("格式錯誤"); }
 }
-
 function resetKey() { localStorage.removeItem('groq_api_key'); location.reload(); }
 
 async function runAnalysis() {
     const text = document.getElementById("userInput").value.trim();
-    if(!text) return alert("請輸入分析內容");
-    if(!savedApiKey) return document.getElementById('apiModal').style.display = 'flex';
+    if(!text) return;
+    const btn = document.getElementById("runBtn");
+    btn.disabled = true;
 
-    const resArea = document.getElementById("resultArea");
-    resArea.innerHTML = `<div class="loader"><div class="spin"></div><p style="font-size:13px;color:var(--gold2);">對照 114年資安獎懲規定與國防法規中...</p></div>`;
+    // 清空並顯示 Loading
+    [1,2,3,4].forEach(i => {
+        document.getElementById(`panel${i}`).innerHTML = `<div class="loader"><div class="spin"></div><p style="font-size:11px;">對照 114年法規庫中...</p></div>`;
+    });
 
-    const systemPrompt = `你是一位資深的國防法律與資安稽核專家。請針對使用者輸入內容，對照以下法規庫進行鑑定分析：
-
-1. 【刑事鑑定】：依據《陸海空軍刑法》判斷是否涉及洩密、資敵、違抗命令或職務犯罪。
-2. 【資安違規鑑定】：**嚴格依據 114年8月修正之《國軍資通安全獎懲規定》**。
-   - 分析：智慧型手機違規（大陸廠牌、私帶入營、未裝MDM）。
-   - 分析：資訊違規（私接周邊、未核准軟體）。
-3. 【行政違失】：對照《國防部組織法》與《軍官士官退撫基金繳費作業規定》，判定是否有行政疏失或遲辦損害。
-4. 【移送與處分建議】：
-   - 明確指出處分級距（申誡、記過、大過、汰除）。
-   - 列出應蒐集的證據清單（如：手機鑑定報告、資安講習紀錄）。
-   - 移送單位建議。
-
-請以嚴謹的公文口吻回答，格式清晰並條列重點。`;
+    const sysPrompt = `你是一位資深的國防法律專家。請針對輸入內容，依據以下法規進行全方位鑑定：
+    1. 【刑法】：陸海空軍刑法。
+    2. 【資安獎懲】：**114年8月修正之國軍資通安全獎懲規定**（含手機、通信、資訊違規級距）。
+    3. 【行政法】：國防部組織法、軍士官退撫基金繳費作業規定。
+    
+    請產出 JSON 格式：
+    {
+      "strategy": [{"q": "詢問重點", "purpose": "目的", "tip": "技巧"}],
+      "law": {"crime": "可能罪名", "admin": "行政/資安處分級距(申誡/記過/大過)", "reason": "法源依據"},
+      "procedure": {"time_limit": "辦案限期建議", "steps": ["步驟1", "步驟2"]},
+      "evidence": ["應蒐集證據1", "應蒐集證據2"],
+      "transfer": "建議移送單位"
+    }`;
 
     try {
-        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
-            headers: { "Authorization": `Bearer ${savedApiKey}`, "Content-Type": "application/json" },
+            headers: { "Authorization": `Bearer ${savedKey}`, "Content-Type": "application/json" },
             body: JSON.stringify({
                 model: "llama-3.3-70b-versatile",
-                messages: [{role: "system", content: systemPrompt}, {role: "user", content: text}],
-                temperature: 0.2
+                messages: [{role: "system", content: sysPrompt}, {role: "user", content: text}],
+                response_format: { type: "json_object" }
             })
         });
-        const data = await response.json();
-        const content = data.choices[0].message.content;
-        resArea.innerHTML = `<div style="padding:10px;white-space:pre-wrap;line-height:1.8;color:#d1d5db;">${content}</div>`;
+        const data = await resp.json();
+        const res = JSON.parse(data.choices[0].message.content);
+        
+        // 渲染結果
+        renderPanel1(res.strategy);
+        renderPanel2(res.law);
+        renderPanel3(res.procedure);
+        renderPanel4(res.evidence, res.transfer);
     } catch (e) {
-        resArea.innerHTML = `<p style="color:var(--red);padding:20px;">錯誤：連線失敗或 API Key 無效。請重設後再試。</p>`;
-    }
+        alert("分析失敗，請檢查 Key。");
+    } finally { btn.disabled = false; }
 }
 
-async function exportWord() {
-    const content = document.getElementById("resultArea").innerText;
-    if(!content || content.includes("等待資料輸入")) return alert("無資料可匯出");
-
-    const { Document, Packer, Paragraph, TextRun } = docx;
-    const doc = new Document({
-        sections: [{
-            children: [
-                new Paragraph({ text: "司法警察智慧偵詢鑑定分析報告", heading: "Heading1" }),
-                new Paragraph({ text: "\n" }),
-                new Paragraph({ children: [new TextRun({ text: content, font: "Noto Sans TC" })] })
-            ]
-        }]
-    });
-    const blob = await Packer.toBlob(doc);
-    saveAs(blob, `智慧偵詢報告_${new Date().toLocaleDateString()}.docx`);
+function renderPanel1(data) {
+    document.getElementById("panel1").innerHTML = `<div class="fade-up" style="padding:15px;">${data.map(s => `<div style="margin-bottom:12px;border-left:2px solid var(--gold);padding-left:10px;"><p style="font-size:13px;font-weight:700;">${s.q}</p><p style="font-size:11px;color:var(--muted);">${s.purpose}</p></div>`).join('')}</div>`;
+}
+function renderPanel2(data) {
+    document.getElementById("panel2").innerHTML = `<div class="fade-up" style="padding:15px;"><p style="color:var(--red);font-weight:700;">刑責：${data.crime}</p><p style="color:var(--gold2);margin:10px 0;">處分：${data.admin}</p><p style="font-size:12px;color:var(--muted);">依據：${data.reason}</p></div>`;
+}
+function renderPanel3(data) {
+    document.getElementById("panel3").innerHTML = `<div class="fade-up" style="padding:15px;"><p style="color:var(--blue);font-weight:700;">⏰ ${data.time_limit}</p><ul style="margin-top:10px;font-size:12px;">${data.steps.map(s => `<li>${s}</li>`).join('')}</ul></div>`;
+}
+function renderPanel4(ev, tr) {
+    document.getElementById("panel4").innerHTML = `<div class="fade-up" style="padding:15px;"><p style="color:var(--green);font-weight:700;">移送：${tr}</p><ul style="margin-top:10px;font-size:12px;">${ev.map(e => `<li>${e}</li>`).join('')}</ul></div>`;
 }
 </script>
 </body>
