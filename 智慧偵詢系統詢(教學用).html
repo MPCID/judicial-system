@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>智慧偵詢分析系統｜臺北憲兵隊</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+<style>
+:root{--bg:#0a0c0f;--sur:#111418;--sur2:#181c22;--bor:#252a32;--bor2:#2e3440;--gold:#c8a96e;--gold2:#e8c98e;--red:#e05252;--green:#4caf7d;--blue:#4a90d9;--text:#e8eaf0;--muted:#6b7280;--dim:#3d4452;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace;}
+.serif{font-family:'Noto Serif TC',serif;}
+::-webkit-scrollbar{width:4px;} ::-webkit-scrollbar-track{background:var(--sur);} ::-webkit-scrollbar-thumb{background:var(--bor2);border-radius:2px;}
+textarea:focus,input:focus{outline:none;}
+textarea::placeholder,input::placeholder{color:var(--dim);}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}} .blink{animation:blink 1s step-end infinite;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}} .fade-up{animation:fadeUp .3s ease forwards;}
+@keyframes dp{0%,100%{opacity:1}50%{opacity:.3}} .dp{animation:dp 1.4s ease infinite;}
+@keyframes spin{to{transform:rotate(360deg)}} .spin{animation:spin .9s linear infinite;}
+@keyframes mIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}} .mIn{animation:mIn .25s ease forwards;}
+.tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:2px;font-size:10px;font-family:'JetBrains Mono',monospace;font-weight:700;letter-spacing:.04em;text-transform:uppercase;}
+.tg{background:rgba(200,169,110,.12);border:1px solid rgba(200,169,110,.3);color:var(--gold2);}
+.tgr{background:rgba(76,175,125,.1);border:1px solid rgba(76,175,125,.3);color:var(--green);}
+.tr{background:rgba(224,82,82,.1);border:1px solid rgba(224,82,82,.3);color:var(--red);}
+.td{background:rgba(61,68,82,.3);border:1px solid var(--bor2);color:var(--muted);}
+.card{background:var(--sur);border:1px solid var(--bor);}
+textarea.inp{width:100%;height:150px;background:var(--bg);color:var(--text);border:1px solid var(--bor2);font-family:'Noto Sans TC',sans-serif;font-size:13px;line-height:1.9;padding:12px 14px;resize:none;transition:border-color .2s;border-radius:2px;}
+textarea.inp:focus{border-color:var(--gold);}
+input.keyInp{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--bor2);font-family:'JetBrains Mono',monospace;font-size:12px;padding:10px 14px;border-radius:2px;transition:border-color .2s;}
+input.keyInp:focus{border-color:var(--gold);}
+.btnC{background:linear-gradient(135deg,#b8944a,#c8a96e);color:#0a0c0f;font-weight:800;font-family:'Noto Sans TC',sans-serif;font-size:14px;border:none;cursor:pointer;padding:14px;width:100%;border-radius:2px;transition:opacity .15s;}
+.btnC:hover{opacity:.88;}
+.btnG{background:transparent;color:var(--muted);border:1px solid var(--bor2);cursor:pointer;font-family:'Noto Sans TC',sans-serif;font-size:12px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:6px 14px;border-radius:2px;transition:border-color .15s,color .15s;}
+.btnG:hover:not(:disabled){border-color:var(--gold);color:var(--gold);}
+.btnG:disabled{opacity:.3;cursor:not-allowed;}
+.exBtn{background:var(--sur2);border:1px solid var(--bor);text-align:left;cursor:pointer;width:100%;padding:10px 12px;border-radius:2px;transition:border-color .15s,background .15s;}
+.exBtn:hover{border-color:var(--gold);background:rgba(200,169,110,.05);}
+.tabBtn{flex:1;padding:12px 4px;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:'Noto Sans TC',sans-serif;font-size:12px;font-weight:700;transition:color .15s;display:flex;align-items:center;justify-content:center;gap:5px;}
+.tabBtn.on{color:var(--gold2);border-bottom-color:var(--gold);}
+.tabBtn.off{color:var(--muted);}
+.tabBtn.off:hover{color:var(--text);}
+.eRow{display:flex;align-items:flex-start;gap:10px;padding:9px 11px;border-radius:2px;margin-bottom:5px;}
+.eOk{background:rgba(76,175,125,.07);border:1px solid rgba(76,175,125,.2);}
+.eBad{background:rgba(224,82,82,.07);border:1px solid rgba(224,82,82,.2);}
+.qCard{padding:11px 13px;border-left:2px solid var(--gold);background:var(--sur2);margin-bottom:7px;}
+.pStep{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--bor);}
+.pStep:last-child{border-bottom:none;}
+.rItem{display:flex;gap:8px;align-items:flex-start;padding:9px 11px;background:rgba(224,82,82,.06);border:1px solid rgba(224,82,82,.15);margin-bottom:5px;border-radius:2px;}
+.ring{width:44px;height:44px;border-radius:50%;border:2px solid var(--bor2);border-top-color:var(--gold);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.g2b{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.ex2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;}
+.lawLink{color:var(--blue);font-size:10px;text-decoration:none;font-family:'JetBrains Mono',monospace;}
+.lawLink:hover{color:var(--gold);}
+@media(max-width:768px){.g2{grid-template-columns:1fr;}.navR{display:none !important;}}
+@media(max-width:480px){.g2b{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="overlay" id="warnModal">
+  <div class="mIn card" style="max-width:460px;width:100%;border-color:rgba(224,82,82,.5);border-radius:4px;overflow:hidden;">
+    <div style="background:rgba(224,82,82,.12);border-bottom:1px solid rgba(224,82,82,.3);padding:16px 20px;display:flex;align-items:center;gap:12px;">
+      <div style="width:36px;height:36px;border:1px solid var(--red);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;">⚠</div>
+      <div>
+        <p class="mono" style="font-size:9px;color:var(--red);letter-spacing:.12em;text-transform:uppercase;margin-bottom:2px;">SECURITY WARNING · 安全警示</p>
+        <p class="serif" style="font-size:16px;font-weight:900;color:var(--text);">使用前注意事項</p>
+      </div>
+    </div>
+    <div style="padding:18px 20px 0;">
+      <div style="background:rgba(224,82,82,.08);border:1px solid rgba(224,82,82,.25);padding:12px 14px;margin-bottom:12px;">
+        <p style="font-size:13px;font-weight:800;color:var(--red);margin-bottom:6px;">⚠ 禁止填入真實個人資料</p>
+        <p style="font-size:12px;color:var(--muted);line-height:1.9;">請勿輸入任何人員之<span style="color:var(--gold2);font-weight:700;">真實姓名、身分證字號、服役番號</span>等個人基本資料。</p>
+      </div>
+      <div style="margin-bottom:14px;">
+        <div style="display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--bor);"><span style="color:var(--green);">✓</span><p style="font-size:12px;color:var(--text);line-height:1.7;">人員一律以代號稱呼，例如：甲員、乙員、排長</p></div>
+        <div style="display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--bor);"><span style="color:var(--green);">✓</span><p style="font-size:12px;color:var(--text);line-height:1.7;">地點單位以代稱表示，例如：某營、某連</p></div>
+        <div style="display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--bor);"><span style="color:var(--green);">✓</span><p style="font-size:12px;color:var(--text);line-height:1.7;">本系統為偵查輔助機關使用，分析結果僅供參考</p></div>
+        <div style="display:flex;gap:10px;padding:7px 0;"><span style="color:var(--red);">✗</span><p style="font-size:12px;color:var(--text);line-height:1.7;">禁止輸入機密等級以上之案件資訊</p></div>
+      </div>
+      <div style="background:var(--sur2);border:1px solid var(--bor2);padding:10px 13px;margin-bottom:18px;">
+        <p class="mono" style="font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">正確輸入範例</p>
+        <p style="font-size:12px;color:var(--gold2);line-height:1.8;">「<span style="color:var(--green);">甲員</span>涉嫌於○月○日，在<span style="color:var(--green);">某連</span>宿舍竊取<span style="color:var(--green);">乙員</span>手機一支...」</p>
+      </div>
+    </div>
+    <div style="padding:0 20px 20px;">
+      <button class="btnC" onclick="closeWarn()">✓ 我已了解，進入系統</button>
+      <p class="mono" style="font-size:9px;color:var(--dim);text-align:center;margin-top:8px;">點擊確認即表示同意遵守上述使用規範</p>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="keyModal" style="display:none;">
+  <div class="mIn card" style="max-width:420px;width:100%;border-color:rgba(200,169,110,.4);border-radius:4px;overflow:hidden;">
+    <div style="background:rgba(200,169,110,.08);border-bottom:1px solid rgba(200,169,110,.2);padding:16px 20px;">
+      <p class="mono" style="font-size:9px;color:var(--gold);letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px;">API CONFIGURATION · 完全免費</p>
+      <p class="serif" style="font-size:16px;font-weight:900;color:var(--text);">設定 Groq API Key</p>
+    </div>
+    <div style="padding:20px;">
+      <div style="background:rgba(76,175,125,.06);border:1px solid rgba(76,175,125,.2);padding:10px 13px;margin-bottom:14px;border-radius:2px;">
+        <p style="font-size:12px;color:var(--green);font-weight:700;margin-bottom:3px;">✓ Groq 完全免費，台灣可用</p>
+        <p style="font-size:11px;color:var(--muted);">申請網址：<span style="color:var(--gold);">console.groq.com</span> → API Keys → Create API Key</p>
+      </div>
+      <input class="keyInp" type="password" id="keyInput" placeholder="gsk_..."/>
+      <p id="keyError" style="font-size:11px;color:var(--red);margin-top:6px;display:none;">Key 格式不正確，應以 gsk_ 開頭</p>
+      <div style="margin-top:14px;"><button class="btnC" onclick="saveKey()">確認儲存</button></div>
+      <p style="font-size:10px;color:var(--dim);margin-top:10px;text-align:center;">Key 僅儲存在你的瀏覽器中，不會上傳至任何伺服器</p>
+    </div>
+  </div>
+</div>
+
+<div style="min-height:100vh;display:flex;flex-direction:column;">
+  <nav style="background:var(--sur);border-bottom:1px solid var(--bor);padding:0 16px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:100;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div style="width:30px;height:30px;border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:14px;">🛡</div>
+      <div>
+        <p class="mono" style="font-size:9px;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;">軍事司法警察・偵查輔助機關</p>
+        <p class="serif" style="font-size:13px;color:var(--text);font-weight:700;line-height:1.1;">智慧偵詢分析系統</p>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="navR" style="display:flex;align-items:center;gap:14px;">
+        <div style="display:flex;align-items:center;gap:5px;">
+          <span style="width:5px;height:5px;border-radius:50%;background:var(--green);" class="dp"></span>
+          <span id="navCount" class="mono" style="font-size:9px;color:var(--muted);">STANDBY</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:5px;">
+          <span id="rateColor" style="width:5px;height:5px;border-radius:50%;background:var(--green);"></span>
+          <span id="rateText" class="mono" style="font-size:9px;color:var(--muted);">額度載入中...</span>
+        </div>
+      </div>
+      <button class="btnG" onclick="document.getElementById('keyModal').style.display='flex'" style="font-size:10px;padding:4px 10px;">⚙ API Key</button>
+    </div>
+  </nav>
+
+  <div style="flex:1;max-width:1280px;width:100%;margin:0 auto;padding:16px 14px;">
+    <div class="g2">
+
+      <div style="display:flex;flex-direction:column;gap:12px;">
+
+        <div class="card" style="border-radius:3px;overflow:hidden;">
+          <div style="padding:11px 14px;border-bottom:1px solid var(--bor);display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="tag tg" style="font-size:9px;">AUTO-ANALYZE</span>
+              <span class="serif" style="font-size:13px;font-weight:700;color:var(--text);">案情輸入</span>
+            </div>
+            <span id="statusBadge" class="mono" style="font-size:10px;color:var(--dim);">0/15</span>
+          </div>
+          <div style="padding:12px 14px;">
+            <div style="background:rgba(224,82,82,.06);border:1px solid rgba(224,82,82,.2);padding:7px 10px;margin-bottom:9px;display:flex;gap:6px;align-items:center;">
+              <span style="color:var(--red);">⚠</span>
+              <p style="font-size:11px;color:rgba(224,82,82,.8);">人員請使用代號（甲員、乙員），勿填真實姓名</p>
+            </div>
+            <textarea class="inp" id="caseInput" placeholder="輸入案情概要（15字後停止輸入自動分析）&#10;&#10;例：甲員（現役軍人）於○月○日，在某連宿舍&#10;竊取乙員手機一支，價值約8,000元..."></textarea>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+              <span id="hintText" class="mono" style="font-size:9px;color:var(--dim);">還需 15 字</span>
+              <button class="btnG" id="rerunBtn" onclick="rerun()" disabled>↺ 重新分析</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="border-radius:3px;overflow:hidden;">
+          <div style="padding:9px 14px;border-bottom:1px solid var(--bor);">
+            <span class="mono" style="font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">▸ 快速範例（已使用代號）</span>
+          </div>
+          <div style="padding:10px;" class="ex2">
+            <button class="exBtn" onclick="setExample('甲員（民人）販賣第二級毒品安非他命予乙員，並於施用後駕車，涉嫌違反毒品危害防制條例第4條第2項及刑法第185-3條。')"><span class="tag tg" style="margin-bottom:4px;display:inline-block;font-size:9px;">毒品+公危</span><p style="font-size:11px;color:var(--muted);line-height:1.6;margin-top:2px;">一行為觸犯多罪範例</p></button>
+            <button class="exBtn" onclick="setExample('甲員（現役軍人）趁乙員熟睡時，在營區宿舍竊取手機一支（價值約12,000元），事後轉售，涉嫌違反刑法第321條加重竊盜罪。')"><span class="tag tg" style="margin-bottom:4px;display:inline-block;font-size:9px;">竊盜</span><p style="font-size:11px;color:var(--muted);line-height:1.6;margin-top:2px;">刑法第321條</p></button>
+            <button class="exBtn" onclick="setExample('甲員（現役軍人）無故離營逾三十日，電話無回應，家屬表示不知其行蹤，涉嫌違反陸海空軍刑法第39條逃亡罪。')"><span class="tag tg" style="margin-bottom:4px;display:inline-block;font-size:9px;">逃亡</span><p style="font-size:11px;color:var(--muted);line-height:1.6;margin-top:2px;">陸海空軍刑法第39條</p></button>
+            <button class="exBtn" onclick="setExample('甲員（現役軍人）酒後對直屬長官乙員當面出言侮辱，涉嫌違反陸海空軍刑法第52條侮辱長官罪。')"><span class="tag tg" style="margin-bottom:4px;display:inline-block;font-size:9px;">侮辱長官</span><p style="font-size:11px;color:var(--muted);line-height:1.6;margin-top:2px;">陸海空軍刑法第52條</p></button>
+            <button class="exBtn" onclick="setExample('甲員（現役軍人）拒絕執行上級長官職權範圍內與軍事有關之合法命令，經再三要求仍拒不服從，涉嫌違反陸海空軍刑法第47條違抗命令罪。')"><span class="tag tg" style="margin-bottom:4px;display:inline-block;font-size:9px;">違抗命令</span><p style="font-size:11px;color:var(--muted);line-height:1.6;margin-top:2px;">陸海空軍刑法第47條</p></button>
+            <button class="exBtn" onclick="setExample('甲員（現役軍人）身為採購業務承辦人，涉嫌收受廠商賄賂新台幣十萬元，涉嫌違反貪污治罪條例第5條第1項第3款。')"><span class="tag tg" style="margin-bottom:4px;display:inline-block;font-size:9px;">貪污</span><p style="font-size:11px;color:var(--muted);line-height:1.6;margin-top:2px;">貪污治罪條例第5條</p></button>
+            <button class="exBtn" onclick="setExample('甲員（現役軍人）涉嫌將列管機密文件攜出營區並洩漏予非相關人員，涉嫌違反國家安全法及刑法第109條。')"><span class="tag tg" style="margin-bottom:4px;display:inline-block;font-size:9px;">洩密</span><p style="font-size:11px;color:var(--muted);line-height:1.6;margin-top:2px;">國家安全法+刑法</p></button>
+            <button class="exBtn" onclick="setExample('甲員（現役軍人，擔任衛兵）於執行警戒勤務時，因睡眠廢弛職務，足以生軍事上之不利益，涉嫌違反陸海空軍刑法第34條廢弛職務罪。')"><span class="tag tg" style="margin-bottom:4px;display:inline-block;font-size:9px;">廢弛職務</span><p style="font-size:11px;color:var(--muted);line-height:1.6;margin-top:2px;">陸海空軍刑法第34條</p></button>
+          </div>
+        </div>
+
+        <div class="card" style="border-radius:3px;overflow:hidden;">
+          <div style="padding:9px 14px;border-bottom:1px solid var(--bor);display:flex;align-items:center;gap:7px;">
+            <span style="color:var(--gold);">⏱</span>
+            <span class="mono" style="font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">標準偵詢 SOP・偵查輔助機關</span>
+          </div>
+          <div style="padding:12px 14px;display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;align-items:flex-start;gap:10px;"><div style="width:25px;height:25px;border-radius:2px;background:var(--sur2);color:var(--dim);border:1px solid var(--bor2);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;font-family:'JetBrains Mono';flex-shrink:0;">01</div><p style="font-size:12px;color:var(--text);line-height:1.6;padding-top:3px;">向該管長官報告並 E 化立案</p></div>
+            <div style="display:flex;align-items:flex-start;gap:10px;"><div style="width:25px;height:25px;border-radius:2px;background:var(--sur2);color:var(--dim);border:1px solid var(--bor2);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;font-family:'JetBrains Mono';flex-shrink:0;">02</div><p style="font-size:12px;color:var(--text);line-height:1.6;padding-top:3px;">身分核對・受詢問人身心狀況確認</p></div>
+            <div style="display:flex;align-items:flex-start;gap:10px;"><div style="width:25px;height:25px;border-radius:2px;background:var(--gold);color:#0a0c0f;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;font-family:'JetBrains Mono';flex-shrink:0;">03</div><p style="font-size:12px;color:var(--gold2);font-weight:700;line-height:1.6;padding-top:3px;">告知法律權利（刑事訴訟法第95條）</p></div>
+            <div style="display:flex;align-items:flex-start;gap:10px;"><div style="width:25px;height:25px;border-radius:2px;background:var(--sur2);color:var(--dim);border:1px solid var(--bor2);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;font-family:'JetBrains Mono';flex-shrink:0;">04</div><p style="font-size:12px;color:var(--text);line-height:1.6;padding-top:3px;">隔離詢問・全程錄影不中斷</p></div>
+            <div style="display:flex;align-items:flex-start;gap:10px;"><div style="width:25px;height:25px;border-radius:2px;background:var(--sur2);color:var(--dim);border:1px solid var(--bor2);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;font-family:'JetBrains Mono';flex-shrink:0;">05</div><p style="font-size:12px;color:var(--text);line-height:1.6;padding-top:3px;">詢問筆錄製作・確認捺印簽署</p></div>
+            <div style="display:flex;align-items:flex-start;gap:10px;"><div style="width:25px;height:25px;border-radius:2px;background:var(--sur2);color:var(--dim);border:1px solid var(--bor2);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;font-family:'JetBrains Mono';flex-shrink:0;">06</div><p style="font-size:12px;color:var(--text);line-height:1.6;padding-top:3px;">陳報移送地方檢察署</p></div>
+          </div>
+        </div>
+
+        <div class="card" style="border-radius:3px;overflow:hidden;">
+          <div style="padding:9px 14px;border-bottom:1px solid var(--bor);display:flex;align-items:center;gap:7px;">
+            <span style="color:var(--gold);">📖</span>
+            <span class="mono" style="font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">全國法規資料庫・快速查詢</span>
+          </div>
+          <div style="padding:10px 14px;">
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+              <a class="lawLink tag td" href="https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=C0000001" target="_blank">刑法</a>
+              <a class="lawLink tag td" href="https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=C0010001" target="_blank">刑事訴訟法</a>
+              <a class="lawLink tag td" href="https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=F0120001" target="_blank">陸海空軍刑法</a>
+              <a class="lawLink tag td" href="https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=C0000007" target="_blank">貪污治罪條例</a>
+              <a class="lawLink tag td" href="https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=C0000008" target="_blank">毒品危害防制條例</a>
+              <a class="lawLink tag td" href="https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=A0030028" target="_blank">國家安全法</a>
+              <a class="lawLink tag td" href="https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=D0080047" target="_blank">槍砲彈藥刀械管制條例</a>
+            </div>
+            <p style="font-size:10px;color:var(--dim);">點擊直接開啟全國法規資料庫對應法條</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="card" style="border-radius:3px;overflow:hidden;flex:1;">
+          <div style="display:flex;border-bottom:1px solid var(--bor);background:var(--sur2);">
+            <button class="tabBtn on" id="tab-elements" onclick="switchTab('elements')">⚖ 構成要件</button>
+            <button class="tabBtn off" id="tab-questions" onclick="switchTab('questions')">≡ 詢問提綱</button>
+            <button class="tabBtn off" id="tab-procedure" onclick="switchTab('procedure')">🛡 程序建議</button>
+          </div>
+          <div id="resultArea" style="min-height:320px;overflow-y:auto;">
+            <div style="height:320px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;">
+              <div style="font-size:32px;opacity:.3;">👁</div>
+              <div style="text-align:center;">
+                <p class="mono" style="font-size:9px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase;">AWAITING CASE INPUT</p>
+                <p style="font-size:12px;color:var(--dim);margin-top:5px;">在左側輸入案情，系統將自動開始分析</p>
+              </div>
+            </div>
+          </div>
+          <div style="padding:14px;border-top:1px solid var(--bor);background:var(--sur2);">
+            <button class="btnC" onclick="generateInstructionalReport()" style="display:flex;align-items:center;justify-content:center;gap:10px;">
+              <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              下載偵查實務作業稿 (DOCX)
+            </button>
+            <p class="mono" style="font-size:9px;color:var(--muted);text-align:center;margin-top:8px;">教學專用：離線生成，不留任何紀錄</p>
+          </div>
+        </div>
+
+        <div class="g2b">
+          <div class="card" style="border-radius:3px;overflow:hidden;">
+            <div style="padding:9px 13px;border-bottom:1px solid var(--bor);display:flex;align-items:center;gap:7px;">
+              <span style="color:var(--gold);">⚖</span>
+              <span class="mono" style="font-size:9px;color:var(--muted);letter-spacing:.09em;text-transform:uppercase;">核心告知義務</span>
+              <a href="https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=C0010001&FLNO=95" target="_blank" class="lawLink tag td" style="font-size:8px;margin-left:auto;">刑訴§95 ↗</a>
+            </div>
+            <div style="padding:9px 13px;">
+              <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--bor);"><span class="mono" style="font-size:9px;color:var(--gold);width:16px;">01</span><span style="font-size:11px;color:var(--text);">罪名告知</span></div>
+              <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--bor);"><span class="mono" style="font-size:9px;color:var(--gold);width:16px;">02</span><span style="font-size:11px;color:var(--text);">緘默權</span></div>
+              <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--bor);"><span class="mono" style="font-size:9px;color:var(--gold);width:16px;">03</span><span style="font-size:11px;color:var(--text);">選任辯護人</span></div>
+              <div style="display:flex;align-items:center;gap:8px;padding:6px 0;"><span class="mono" style="font-size:9px;color:var(--gold);width:16px;">04</span><span style="font-size:11px;color:var(--text);">請求調查有利證據</span></div>
+            </div>
+          </div>
+          <div class="card" style="border-radius:3px;overflow:hidden;border-color:rgba(224,82,82,.3);">
+            <div style="padding:9px 13px;border-bottom:1px solid rgba(224,82,82,.2);display:flex;align-items:center;gap:7px;background:rgba(224,82,82,.05);">
+              <span style="color:var(--red);">⚠</span>
+              <span class="mono" style="font-size:9px;color:var(--red);letter-spacing:.09em;text-transform:uppercase;">詢問筆錄紅燈區</span>
+            </div>
+            <div style="padding:9px 13px;">
+              <div class="rItem"><span style="color:var(--red);">⚠</span><div><p style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:1px;">構成要件遺漏</p><p style="font-size:10px;color:var(--muted);">未詢問動機或物證流向</p></div></div>
+              <div class="rItem"><span style="color:var(--red);">⚠</span><div><p style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:1px;">強制夜間詢問</p><p style="font-size:10px;color:var(--muted);">超時致詢問筆錄證據力喪失</p></div></div>
+              <div class="rItem"><span style="color:var(--red);">⚠</span><div><p style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:1px;">強制處分逾越權限</p><p style="font-size:10px;color:var(--muted);">搜索票、扣押、拘提須依法執行</p></div></div>
+              <div class="rItem" style="margin-bottom:0;"><span style="color:var(--red);">⚠</span><div><p style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:1px;">錄影中斷</p><p style="font-size:10px;color:var(--muted);">全程錄影不得中斷</p></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="border-radius:3px;overflow:hidden;border-color:rgba(74,144,217,.3);">
+          <div style="padding:9px 13px;border-bottom:1px solid rgba(74,144,217,.2);display:flex;align-items:center;gap:7px;background:rgba(74,144,217,.05);">
+            <span style="color:var(--blue);">📋</span>
+            <span class="mono" style="font-size:9px;color:var(--blue);letter-spacing:.09em;text-transform:uppercase;">偵查輔助機關・移送提醒</span>
+          </div>
+          <div style="padding:9px 13px;">
+            <p style="font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.7;">本機關為偵查輔助機關，<span style="color:var(--gold2);font-weight:700;">僅有移送權，無起訴權</span>，案件偵查完竣後應製作移送書，並檢附詢問筆錄、扣押物品清冊等移送地方檢察署。</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <span class="tag td" style="font-size:10px;">移送書</span>
+              <span class="tag td" style="font-size:10px;">詢問筆錄</span>
+              <span class="tag td" style="font-size:10px;">扣押物品清冊</span>
+              <span class="tag td" style="font-size:10px;">證據資料</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer style="border-top:1px solid var(--bor);padding:10px 16px;background:var(--sur);">
+    <div style="max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;">
+      <div>
+        <p class="mono" style="font-size:9px;color:var(--gold);letter-spacing:.08em;margin-bottom:2px;">製作</p>
+        <p class="serif" style="font-size:12px;color:var(--text);font-weight:700;">臺北憲兵隊軍事偵察組調查官　吳鋐峮</p>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:4px;"><span style="width:4px;height:4px;border-radius:50%;background:var(--gold);" class="dp"></span><span class="mono" style="font-size:8px;color:var(--dim);">GROQ FREE</span></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span style="width:4px;height:4px;border-radius:50%;background:var(--green);" class="dp"></span><span class="mono" style="font-size:8px;color:var(--dim);">AUTO-ANALYZE v4.0</span></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span style="width:4px;height:4px;border-radius:50%;background:var(--blue);" class="dp"></span><span class="mono" style="font-size:8px;color:var(--dim);">全國法規資料庫</span></div>
+      </div>
+    </div>
+    <p class="mono" style="font-size:8px;color:var(--dim);max-width:1280px;margin:4px auto 0;">© 2026 臺北憲兵隊司法警察智慧偵詢實務教學系統 · CONFIDENTIAL · 本系統僅供教學訓練參考使用・偵查輔助機關專用</p>
+  </footer>
+</div>
+
+<script>
+const LAW_DB = {
+  毒品危害防制條例: {
+    pcode: "C0000008",
+    articles: {
+      "第4條第1項": "製造、運輸、販賣第一級毒品，處死刑或無期徒刑",
+      "第4條第2項": "製造、運輸、販賣第二級毒品（安非他命、MDMA等），處無期徒刑或十年以上有期徒刑",
+      "第4條第3項": "製造、運輸、販賣第三級毒品（愷他命等），處七年以上有期徒刑",
+      "第4條第4項": "製造、運輸、販賣第四級毒品，處五年以上十二年以下有期徒刑",
+      "第10條第1項": "施用第一級毒品，處六月以上五年以下有期徒刑",
+      "第10條第2項": "施用第二級毒品，處三年以下有期徒刑",
+      "第11條第1項": "持有第一級毒品，處三年以下有期徒刑",
+      "第11條第2項": "持有第二級毒品，處二年以下有期徒刑",
+      "第11條第3項": "持有第三級毒品達一定數量，處一年以下有期徒刑"
+    }
+  },
+  陸海空軍刑法: {
+    pcode: "F0120001",
+    articles: {
+      "第34條": "廢弛職務罪：衛兵、哨兵因睡眠、酒醉或其他相類情形廢弛職務，足以生軍事上之不利益，處五年以下有期徒刑",
+      "第35條": "擅離職役罪：衛兵、哨兵擅離勤務所在地，處一年以下有期徒刑",
+      "第39條": "逃亡罪：現役軍人無故離去或不就職役逾三十日，處一年以上七年以下有期徒刑",
+      "第47條": "違抗命令罪：違抗上級機關或長官職權範圍內所下達或發布與軍事有關之命令，處五年以下有期徒刑",
+      "第52條": "侮辱長官罪：對於上官面加侮辱或直接以文書侮辱，處一年以下有期徒刑；公然侮辱處三年以下有期徒刑",
+      "第76條": "現役軍人犯刑法特定之罪，依各該規定處罰（戰時加重）"
+    }
+  },
+  刑法: {
+    pcode: "C0000001",
+    articles: {
+      "第109條": "洩漏或交付國防秘密，處一年以上七年以下有期徒刑",
+      "第185-3條": "不能安全駕駛動力交通工具罪，處三年以下有期徒刑",
+      "第277條": "普通傷害罪，處五年以下有期徒刑",
+      "第278條": "重傷罪，處五年以上十二年以下有期徒刑",
+      "第309條": "公然侮辱罪，處拘役或九千元以下罰金",
+      "第310條": "誹謗罪，處一年以下有期徒刑",
+      "第315條": "妨害秘密罪，處三年以下有期徒刑",
+      "第320條": "普通竊盜罪，處五年以下有期徒刑",
+      "第321條": "加重竊盜罪（夜間、攜帶兇器等），處六月以上五年以下有期徒刑"
+    }
+  },
+  貪污治罪條例: {
+    pcode: "C0000007",
+    articles: {
+      "第4條第1項第1款": "竊取或侵占公用財物，處七年以上有期徒刑",
+      "第5條第1項第2款": "不違背職務收受賄賂，處七年以上有期徒刑",
+      "第5條第1項第3款": "違背職務收受賄賂，處無期徒刑或十年以上有期徒刑",
+      "第6條第1項第4款": "圖利罪，處五年以上有期徒刑"
+    }
+  },
+  國家安全法: {
+    pcode: "A0030028",
+    articles: {
+      "第5條": "為敵人服務或洩漏國家機密，處七年以上有期徒刑"
+    }
+  },
+  槍砲彈藥刀械管制條例: {
+    pcode: "D0080047",
+    articles: {
+      "第7條": "製造、販賣或運輸制式槍砲、彈藥，處無期徒刑或五年以上有期徒刑",
+      "第8條": "製造、販賣或運輸非制式槍砲，處五年以上有期徒刑",
+      "第14條": "未經許可持有刀械，處二年以下有期徒刑"
+    }
+  }
+};
+
+const SYSTEM_PROMPT = `你是台灣軍事司法警察（偵查輔助機關）的法律分析專家。
+
+【重要規則】
+1. 身分判斷：案情中有明確說明「現役軍人」才適用陸海空軍刑法，否則以一般刑法處理
+2. 一行為多罪：必須分析所有可能觸犯的罪名，不只列一條
+3. 法條精確：必須引用正確條次，以下是正確條次對照表：
+
+【陸海空軍刑法正確條次】
+- 第34條：廢弛職務罪（衛哨睡眠、酒醉廢弛職務）
+- 第35條：擅離職役罪（衛兵哨兵擅離勤務所在地）
+- 第39條：逃亡罪（無故離去逾30日）
+- 第47條：違抗命令罪（違抗長官合法命令）
+- 第52條：侮辱長官罪（面加侮辱或公然侮辱上官）
+- 第76條：現役軍人適用刑法特定罪章
+
+【毒品危害防制條例正確條次】
+- 第4條第1項：製造販賣第一級毒品（海洛因）
+- 第4條第2項：製造販賣第二級毒品（安非他命、MDMA）
+- 第4條第3項：製造販賣第三級毒品（愷他命）
+- 第10條第1項：施用第一級毒品
+- 第10條第2項：施用第二級毒品
+- 第11條第1項：持有第一級毒品
+- 第11條第2項：持有第二級毒品
+
+【刑法常用條次】
+- 第185-3條：不能安全駕駛罪
+- 第277條：傷害罪
+- 第278條：重傷罪
+- 第309條：公然侮辱罪
+- 第310條：誹謗罪
+- 第320條：普通竊盜罪
+- 第321條：加重竊盜罪（夜間、侵入建築物等）
+
+【貪污治罪條例正確條次】
+- 第4條第1項第1款：侵占公款
+- 第5條第1項第2款：不違背職務收賄
+- 第5條第1項第3款：違背職務收賄
+- 第6條第1項第4款：圖利罪
+
+【用詞規範】
+- 受詢問人（非「受詢人」）
+- 詢問筆錄（非「筆錄」）
+- 移送（非「起訴」）
+- 移送書（非「起訴書」）
+- 扣押物品清冊（非「證據清單」）
+- 搜索票（非「搜索令」）
+- 強制處分：搜索、扣押、拘提
+- 本機關為偵查輔助機關，僅有移送權，無起訴權，移送至地方檢察署`;
+
+let API_KEY = localStorage.getItem("groq_key") || "";
+let debounceTimer = null;
+let prevText = "";
+let analysisCount = 0;
+let activeTab = "elements";
+let results = {elements:null,questions:null,procedure:null};
+let loading = {elements:false,questions:false,procedure:false};
+let hasAnalyzed = false;
+
+function closeWarn() {
+  document.getElementById("warnModal").style.display = "none";
+  if (!API_KEY) setTimeout(() => { document.getElementById("keyModal").style.display = "flex"; }, 300);
+}
+
+function updateRateDisplay(remaining, resetSec) {
+  const el = document.getElementById("rateText");
+  const dot = document.getElementById("rateColor");
+  if (!el) return;
+  let color = "var(--green)";
+  let msg = `每分鐘剩餘：${remaining} 次`;
+  if (remaining <= 5) { color = "var(--red)"; msg = `⚠ 剩餘 ${remaining} 次，即將限流`; }
+  else if (remaining <= 15) { color = "var(--gold)"; msg = `剩餘 ${remaining} 次`; }
+  el.textContent = msg;
+  el.style.color = color;
+  if (dot) dot.style.background = color;
+  if (resetSec && remaining <= 5) {
+    const sec = parseInt(resetSec.replace(/[^0-9]/g,"")) || 60;
+    el.textContent += `（${sec}秒後重置）`;
+  }
+}
+
+function saveKey() {
+  const val = document.getElementById("keyInput").value.trim();
+  if (!val.startsWith("gsk_")) { document.getElementById("keyError").style.display = "block"; return; }
+  API_KEY = val;
+  localStorage.setItem("groq_key", val);
+  document.getElementById("keyModal").style.display = "none";
+  document.getElementById("keyError").style.display = "none";
+}
+
+const caseInput = document.getElementById("caseInput");
+caseInput.addEventListener("input", () => {
+  const len = caseInput.value.length;
+  const badge = document.getElementById("statusBadge");
+  const hint = document.getElementById("hintText");
+  const btn = document.getElementById("rerunBtn");
+  if (len >= 15) {
+    badge.textContent = "READY"; badge.style.color = "var(--green)";
+    hint.textContent = "↑ 停止輸入 1.8 秒後自動觸發"; btn.disabled = false;
+  } else {
+    badge.textContent = len+"/15"; badge.style.color = "var(--dim)";
+    hint.textContent = "還需 "+(15-len)+" 字"; btn.disabled = true;
+  }
+  clearTimeout(debounceTimer);
+  if (len >= 15) debounceTimer = setTimeout(() => {
+    if (caseInput.value !== prevText) { prevText = caseInput.value; runAll(caseInput.value); }
+  }, 1800);
+});
+
+function setExample(t) { caseInput.value = t; caseInput.dispatchEvent(new Event("input")); }
+function rerun() { prevText = ""; runAll(caseInput.value); }
+function switchTab(tab) {
+  activeTab = tab;
+  ["elements","questions","procedure"].forEach(t => {
+    document.getElementById("tab-"+t).className = t===tab ? "tabBtn on" : "tabBtn off";
+  });
+  renderResult();
+}
+
+// 核心功能：生成 DOCX 報告
+async function generateInstructionalReport() {
+    const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType, HeadingLevel } = docx;
+
+    const caseText = document.getElementById('caseInput').value || "未填寫案情";
+    const reportDate = new Date().toLocaleDateString('zh-TW');
+
+    const doc = new Document({
+        sections: [{
+            properties: {
+                page: { margin: { top: 1440, bottom: 1440, left: 1440, right: 1440 } }
+            },
+            children: [
+                new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    spacing: { after: 400 },
+                    children: [
+                        new TextRun({ text: "臺北憲兵隊 偵查實務教學作業稿", bold: true, size: 36 })
+                    ],
+                }),
+                new Paragraph({
+                    alignment: AlignmentType.LEFT,
+                    spacing: { after: 300 },
+                    children: [
+                        new TextRun({ text: "【教學專用：本文件僅供實務演練使用，非正式法律文書】", color: "FF0000", bold: true, size: 24 })
+                    ],
+                }),
+                new Table({
+                    width: { size: 100, type: WidthType.PERCENTAGE },
+                    rows: [
+                        new TableRow({
+                            children: [
+                                new TableCell({ width: { size: 20, type: WidthType.PERCENTAGE }, shading: { fill: "F2F2F2" }, children: [new Paragraph("訓練班隊")] }),
+                                new TableCell({ children: [new Paragraph("")] }),
+                                new TableCell({ width: { size: 20, type: WidthType.PERCENTAGE }, shading: { fill: "F2F2F2" }, children: [new Paragraph("學員姓名")] }),
+                                new TableCell({ children: [new Paragraph("")] }),
+                            ],
+                        }),
+                    ],
+                }),
+
+                new Paragraph({ text: "\n壹、 案情概要紀錄", heading: HeadingLevel.HEADING_1, spacing: { before: 400 } }),
+                new Paragraph({ 
+                  children: [new TextRun({ text: "學生輸入內容：", bold: true }), new TextRun({ text: caseText })],
+                  spacing: { before: 200 }
+                }),
+
+                new Paragraph({ text: "\n貳、 案情重點研判與法律分析", heading: HeadingLevel.HEADING_1, spacing: { before: 400 } }),
+                new Paragraph({ text: "（請學員根據系統分析結果，簡述涉嫌罪名、構成要件與身分判斷）", color: "888888", italics: true }),
+                new Paragraph({ text: "\n\n\n\n" }),
+
+                new Paragraph({ text: "參、 偵查作為與法律時效", heading: HeadingLevel.HEADING_1, spacing: { before: 400 } }),
+                new Paragraph({ text: "（請學員練習記錄逮捕時間及預計移送檢察署之時間點）", color: "888888", italics: true }),
+                new Paragraph({ text: "\n\n\n\n" }),
+
+                new Paragraph({ text: "肆、 移送卷證核對紀錄", heading: HeadingLevel.HEADING_1, spacing: { before: 400 } }),
+                new Paragraph({ text: "（請列出本案應備之移送書、筆錄、扣押物品清冊及相關證物）", color: "888888", italics: true }),
+                new Paragraph({ text: "\n\n\n\n" }),
+
+                new Paragraph({ text: "伍、 實務心得與檢討建議", heading: HeadingLevel.HEADING_1, spacing: { before: 400 } }),
+                new Paragraph({ text: "\n\n\n\n" }),
+
+                new Paragraph({
+                    alignment: AlignmentType.RIGHT,
+                    spacing: { before: 800 },
+                    children: [
+                        new TextRun({ text: "指導教官/中隊長 簽章：____________________", size: 28 })
+                    ],
+                }),
+                new Paragraph({
+                    alignment: AlignmentType.RIGHT,
+                    children: [
+                        new TextRun({ text: "生成日期：" + reportDate, size: 20, color: "666666" })
+                    ],
+                }),
+            ],
+        }],
+    });
+
+    Packer.toBlob(doc).then(blob => {
+        saveAs(blob, `偵查實務作業稿_${new Date().getTime()}.docx`);
+    });
+}
+
+async function callGroqOnce(caseText, retryCount = 0) {
+  if (!API_KEY) throw new Error("no key");
+  const combinedPrompt = `請針對以下案情，一次輸出完整的三部分分析。只輸出純 JSON（禁止任何 markdown 或說明文字）：
+{
+  "elements": {
+    "charges": [{"crime_type":"罪名","legal_basis":"法律名稱第X條第X項","elements":[{"name":"構成要件","satisfied":true,"note":"說明"}],"severity":"輕微|中等|重大"}],
+    "subject_type": "民人|現役軍人|不明",
+    "urgency": "低|中|高",
+    "summary": "一句話案件摘要"
+  },
+  "questions": {
+    "strategy": "整體詢問策略",
+    "questions": [{"q":"詢問問題","purpose":"提問目的","tip":"詢問技巧"}],
+    "pitfalls": ["應避免的陷阱"],
+    "key_evidence": ["應蒐集的關鍵證據"]
+  },
+  "procedure": {
+    "time_limit": "法定期間提醒",
+    "steps": [{"step":"步驟名稱","detail":"執行細節","critical":true}],
+    "evidence_needed": ["應蒐集證據"],
+    "compulsory_measures": ["建議強制處分：搜索票/扣押/拘提"],
+    "transfer_docs": ["移送所需文件"],
+    "warnings": ["程序注意事項"]
+  }
+}`;
+
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": "Bearer "+API_KEY },
+    body: JSON.stringify({
+      model: "llama-3.3-70b-versatile",
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: combinedPrompt + "\n\n案情：" + caseText }
+      ],
+      temperature: 0.1, max_tokens: 3000,
+      response_format: { type: "json_object" }
+    })
+  });
+
+  const remaining = res.headers.get("x-ratelimit-remaining-requests");
+  const resetSec  = res.headers.get("x-ratelimit-reset-requests");
+  if (remaining !== null) updateRateDisplay(parseInt(remaining), resetSec);
+
+  if (res.status === 429) {
+    if (retryCount >= 2) throw new Error("429");
+    let sec = 65;
+    const rateEl = document.getElementById("rateText");
+    const dotEl  = document.getElementById("rateColor");
+    if (rateEl) { rateEl.style.color = "var(--red)"; if (dotEl) dotEl.style.background = "var(--red)"; }
+    await new Promise(resolve => {
+      const timer = setInterval(() => {
+        sec--;
+        if (rateEl) rateEl.textContent = `⚠ 速率限制，${sec} 秒後自動重試`;
+        if (sec <= 0) { clearInterval(timer); resolve(); }
+      }, 1000);
+    });
+    return callGroqOnce(caseText, retryCount + 1);
+  }
+
+  if (!res.ok) throw new Error("HTTP "+res.status);
+  const data = await res.json();
+  return JSON.parse(data.choices[0].message.content);
+}
+
+function runAll(text) {
+  if (!API_KEY) { document.getElementById("keyModal").style.display="flex"; return; }
+  hasAnalyzed = true;
+  results = {elements:null,questions:null,procedure:null};
+  loading = {elements:true,questions:true,procedure:true};
+  analysisCount++;
+  document.getElementById("navCount").textContent = "ANALYZED ×"+analysisCount;
+  renderResult();
+  (async () => {
+    try {
+      const data = await callGroqOnce(text);
+      results.elements  = data.elements  || {error:true, msg:"分析失敗"};
+      results.questions = data.questions || {error:true, msg:"分析失敗"};
+      results.procedure = data.procedure || {error:true, msg:"分析失敗"};
+    } catch(e) {
+      const msg = e.message === "429" ? "請求太頻繁，請等待約 1 分鐘後再試。" : "AI 分析失敗，請確認 Groq API Key 是否正確。";
+      results.elements = results.questions = results.procedure = {error:true, msg};
+    } finally {
+      loading.elements = loading.questions = loading.procedure = false;
+      renderResult();
+    }
+  })();
+}
+
+function renderResult() {
+  const area = document.getElementById("resultArea");
+  if (!hasAnalyzed) return;
+  if (loading[activeTab]) {
+    area.innerHTML = `<div style="height:320px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;"><div class="ring spin"></div><p class="mono" style="font-size:9px;color:var(--gold);">ANALYZING<span class="blink">_</span></p></div>`;
+    return;
+  }
+  const d = results[activeTab];
+  if (!d) return;
+  if (d.error) {
+    const msg = d.msg || "AI 分析失敗，請確認 Groq API Key 是否正確。";
+    const is429 = msg.includes("頻繁");
+    area.innerHTML = `<div style="padding:18px;"><div style="padding:12px 14px;background:rgba(224,82,82,.08);border:1px solid rgba(224,82,82,.2);border-radius:2px;">
+      <p style="font-size:12px;color:var(--red);line-height:1.6;margin-bottom:8px;">${msg}</p>
+      ${is429 ? `<button class="btnG" onclick="rerun()">↺ 重新嘗試</button>` : `<button class="btnG" onclick="document.getElementById('keyModal').style.display='flex'">⚙ 重新設定 Key</button>`}
+    </div></div>`;
+    return;
+  }
+  if (activeTab==="elements") renderElements(d);
+  else if (activeTab==="questions") renderQuestions(d);
+  else renderProcedure(d);
+}
+
+function renderElements(d) {
+  const sev={輕微:"tgr",中等:"tg",重大:"tr"};
+  const urg={低:"td",中:"tg",高:"tr"};
+  const subjectColor = d.subject_type==="現役軍人" ? "var(--gold2)" : d.subject_type==="民人" ? "var(--blue)" : "var(--muted)";
+  let chargesHtml = "";
+  const charges = d.charges || [];
+  charges.forEach((charge, ci) => {
+    chargesHtml += `
+      <div style="margin-bottom:14px;padding:12px;background:var(--sur2);border:1px solid var(--bor2);border-radius:2px;">
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+          <span class="tag tg">${charge.crime_type||""}</span>
+          <span class="tag td mono" style="font-size:9px;">${charge.legal_basis||""}</span>
+          <span class="tag ${sev[charge.severity]||"td"}">嚴重 ${charge.severity||""}</span>
+        </div>
+        <p class="mono" style="font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">▸ 構成要件</p>
+        ${(charge.elements||[]).map(el=>`
+          <div class="eRow ${el.satisfied?"eOk":"eBad"}">
+            <span style="flex-shrink:0;color:${el.satisfied?"var(--green)":"var(--red)"};">${el.satisfied?"✓":"✗"}</span>
+            <div><p style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px;">${el.name}</p><p style="font-size:11px;color:var(--muted);line-height:1.6;">${el.note}</p></div>
+          </div>`).join("")}
+      </div>`;
+  });
+  document.getElementById("resultArea").innerHTML = `<div class="fade-up"><div style="padding:11px 14px;background:rgba(200,169,110,.06);border-bottom:1px solid var(--bor);margin-bottom:12px;"><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;"><span style="font-size:11px;color:${subjectColor};font-weight:700;">身分：${d.subject_type||"不明"}</span><span class="tag ${urg[d.urgency]||"td"}">緊急 ${d.urgency||""}</span></div>${d.summary?`<p style="font-size:12px;color:var(--muted);line-height:1.7;">${d.summary}</p>`:""}</div><div style="padding:0 14px 14px;">${chargesHtml}</div></div>`;
+}
+
+function renderQuestions(d) {
+  document.getElementById("resultArea").innerHTML = `<div class="fade-up">${d.strategy?`<div style="padding:11px 14px;background:rgba(74,144,217,.06);border-bottom:1px solid var(--bor);margin-bottom:12px;"><p class="mono" style="font-size:9px;color:var(--blue);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;">整體詢問策略</p><p style="font-size:12px;color:var(--text);line-height:1.8;">${d.strategy}</p></div>`:""}<div style="padding:0 14px 14px;"><p class="mono" style="font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">▸ 詢問提綱</p>${(d.questions||[]).map((q,i)=>`<div class="qCard"><div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:5px;"><span style="min-width:19px;height:19px;background:var(--gold);color:#0a0c0f;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;font-family:'JetBrains Mono';flex-shrink:0;">${i+1}</span><p style="font-size:12px;font-weight:600;color:var(--text);line-height:1.6;">${q.q}</p></div><div style="margin-left:27px;"><p style="font-size:11px;color:var(--blue);margin-bottom:2px;">目的：${q.purpose}</p><p style="font-size:11px;color:var(--gold);">技巧：${q.tip}</p></div></div>`).join("")}</div></div>`;
+}
+
+function renderProcedure(d) {
+  document.getElementById("resultArea").innerHTML = `<div class="fade-up">${d.time_limit?`<div style="padding:9px 14px;background:rgba(200,169,110,.08);border-bottom:1px solid rgba(200,169,110,.2);margin-bottom:12px;"><p style="font-size:12px;color:var(--gold2);font-weight:600;">⏰ ${d.time_limit}</p></div>`:""}<div style="padding:0 14px 14px;"><p class="mono" style="font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px;">▸ 作業步驟</p>${(d.steps||[]).map((st,i)=>`<div class="pStep"><span style="min-width:22px;height:22px;background:${st.critical?"var(--gold)":"var(--sur2)"};color:${st.critical?"#0a0c0f":"var(--muted)"};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;font-family:'JetBrains Mono';flex-shrink:0;border-radius:2px;">${String(i+1).padStart(2,"0")}</span><div><p style="font-size:12px;font-weight:700;color:${st.critical?"var(--gold2)":"var(--text)"};margin-bottom:2px;">${st.step}</p><p style="font-size:11px;color:var(--muted);line-height:1.6;">${st.detail}</p></div></div>`).join("")}</div></div>`;
+}
+</script>
+</body>
+</html>
