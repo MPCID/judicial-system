@@ -19,36 +19,29 @@ html,body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans
 ::-webkit-scrollbar-thumb{background:var(--bor2);border-radius:10px;}
 
 /* Layout */
-.app-wrapper{display:flex;height:100vh;overflow:hidden;}
-.sidebar{width:420px;background:var(--sur);border-right:1px solid var(--bor);display:flex;flex-direction:column;flex-shrink:0;}
-.main-view{flex:1;background:var(--bg);display:flex;flex-direction:column;min-width:0;}
+.app-wrapper{display:flex;flex-direction:column;height:100vh;background-image:radial-gradient(circle at 50% 0%, #161a22 0%, #0a0c0f 100%);}
+header{flex-shrink:0;height:60px;background:#000;border-bottom:1px solid var(--bor);display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:100;}
+main{flex:1;display:flex;overflow:hidden;padding:20px;gap:20px;}
+
+/* Columns */
+.col-input{flex:1;display:flex;flex-direction:column;gap:15px;min-width:0;}
+.col-output{width:480px;display:flex;flex-direction:column;gap:15px;flex-shrink:0;}
+.card{background:var(--sur);border:1px solid var(--bor);border-radius:8px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 15px 35px rgba(0,0,0,0.4);}
+.card-header{padding:12px 18px;background:var(--sur2);border-bottom:1px solid var(--bor);display:flex;align-items:center;justify-content:space-between;}
+.card-label{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:1px;text-transform:uppercase;}
+
+textarea{flex:1;background:transparent;border:none;color:#fff;padding:20px;font-size:15px;line-height:1.7;resize:none;outline:none;}
+#resultArea{flex:1;overflow-y:auto;padding:20px;background-image:linear-gradient(to bottom, transparent, rgba(0,0,0,0.1));}
 
 /* API Modal */
-#apiModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(10px);}
+#apiModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(10px);}
 .modal-content{background:var(--sur);border:1px solid var(--gold);padding:30px;border-radius:10px;width:380px;text-align:center;}
 .modal-input{width:100%;padding:12px;margin:15px 0;background:#000;border:1px solid var(--bor);color:var(--gold2);border-radius:4px;outline:none;}
 
-/* Sidebar Components */
-header{padding:24px;border-bottom:1px solid var(--bor);background-image:linear-gradient(to bottom, #1a1d22, transparent);}
-.input-group{flex:1;padding:24px;display:flex;flex-direction:column;gap:15px;overflow-y:auto;}
-textarea{width:100%;height:260px;background:rgba(0,0,0,0.1);border:1px solid var(--bor2);color:var(--text);padding:15px;border-radius:8px;font-size:15px;line-height:1.7;resize:none;outline:none;}
-textarea:focus{border-color:var(--gold);background:rgba(0,0,0,0.3);}
+.btn-ai{background:linear-gradient(135deg,#b8944a,#c8a96e);color:#000;border:none;padding:16px;font-weight:900;font-size:15px;border-radius:4px;cursor:pointer;width:100%;transition:0.2s;}
+.btn-ai:hover{filter:brightness(1.1);transform:translateY(-1px);}
 
-/* Law Tags */
-.tag-container{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
-.law-tag{display:inline-block;padding:4px 10px;background:var(--sur2);border:1px solid var(--bor2);color:var(--gold2);font-size:11px;text-decoration:none;border-radius:4px;}
-.law-tag:hover{border-color:var(--gold);}
-
-.btn-run{background:linear-gradient(135deg,#b8944a,#c8a96e);color:#0a0c0f;border:none;padding:16px;border-radius:8px;font-weight:900;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;}
-
-/* Analysis View Grid */
-.analysis-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:1px;background:var(--bor);height:100%;}
-.analysis-cell{background:var(--bg);overflow-y:auto;display:flex;flex-direction:column;}
-.cell-header{padding:12px 18px;background:var(--sur);border-bottom:1px solid var(--bor2);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
-.cell-title{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:1px;text-transform:uppercase;}
-
-.result-content{padding:18px;line-height:1.8;color:#d1d5db;font-size:13.5px;white-space:pre-wrap;}
-.loader{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--dim);gap:15px;}
+.loader{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--muted);gap:15px;}
 .spin{width:20px;height:20px;border:2px solid var(--bor);border-top-color:var(--gold);border-radius:50%;animation:s 1s infinite linear;}
 @keyframes s{to{transform:rotate(360deg)}}
 </style>
@@ -57,54 +50,43 @@ textarea:focus{border-color:var(--gold);background:rgba(0,0,0,0.3);}
 
 <div id="apiModal">
     <div class="modal-content">
-        <p class="serif" style="color:var(--gold);font-size:18px;margin-bottom:10px;">🛡️ 司法警察權限驗證</p>
+        <p class="serif" style="color:var(--gold);font-size:18px;margin-bottom:10px;">🛡️ 司法警察系統驗證</p>
         <p style="font-size:12px;color:var(--muted);">請輸入 Groq API Key 以開啟實戰鑑定系統</p>
         <input type="password" id="keyInput" class="modal-input" placeholder="gsk_...">
-        <button class="btn-run" style="width:100%;" onclick="saveKey()">儲存並啟動系統</button>
+        <button class="btn-ai" onclick="saveKey()">儲存並啟動系統</button>
     </div>
 </div>
 
 <div class="app-wrapper">
-    <aside class="sidebar">
-        <header>
-            <div style="display:flex;align-items:center;gap:15px;margin-bottom:15px;">
-                <div style="width:36px;height:36px;background:var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;">憲</div>
-                <h1 class="serif" style="font-size:18px;font-weight:900;">智慧偵詢分析系統</h1>
+    <header>
+        <div style="display:flex;align-items:center;gap:15px;">
+            <div style="width:32px;height:32px;background:var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;">憲</div>
+            <div>
+                <h1 style="font-size:16px;font-weight:900;letter-spacing:1px;">智慧偵詢分析系統 <span style="font-size:10px;color:var(--muted);margin-left:5px;">V5.0 原始介面回歸版</span></h1>
+                <p class="mono" style="font-size:9px;color:var(--gold);letter-spacing:2px;opacity:0.8;">MILITARY POLICE AI INTELLIGENCE</p>
             </div>
-            <div class="tag-container">
-                <a class="law-tag" href="https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=C0000001" target="_blank">刑法</a>
-                <a class="law-tag" href="https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=C0010001" target="_blank">刑訴法</a>
-                <a class="law-tag" href="https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=F0120001" target="_blank">軍刑法</a>
-                <a class="law-tag" href="https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=C0000008" target="_blank">毒品</a>
-                <a class="law-tag" href="https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=A0030028" target="_blank">國安</a>
-            </div>
-            <p style="font-size:10px;color:var(--dim);">已整合 114年資安新規與國防部組織規程</p>
-        </header>
-
-        <div class="input-group">
-            <textarea id="userInput" placeholder="請貼入詢問紀錄、違失事由或筆錄摘要..."></textarea>
-            <button class="btn-run" id="runBtn" onclick="runAnalysis()">啟動全量法規鑑定</button>
-            <button onclick="resetKey()" style="background:none;border:none;color:var(--dim);font-size:10px;cursor:pointer;margin-top:10px;text-align:left;">➔ 重設 API Key</button>
         </div>
-    </aside>
+        <button onclick="resetKey()" style="background:none;border:1px solid var(--bor);color:var(--muted);font-size:10px;padding:4px 8px;border-radius:4px;cursor:pointer;">重設 API Key</button>
+    </header>
 
-    <main class="main-view">
-        <div class="analysis-grid">
-            <div class="analysis-cell">
-                <div class="cell-header"><span class="cell-title">▸ 偵詢策略建議</span></div>
-                <div id="panel1" class="result-content"><div class="loader">等待輸入...</div></div>
+    <main>
+        <div class="col-input">
+            <div class="card" style="flex:1;">
+                <div class="card-header"><span class="card-label">Evidence & Records / 案情摘要與筆錄</span></div>
+                <textarea id="userInput" placeholder="請在此貼入詢問紀錄、資安違規事由或案情摘要..."></textarea>
+                <div style="padding:15px;background:rgba(0,0,0,0.3);border-top:1px solid var(--bor);">
+                    <button class="btn-ai" id="runBtn" onclick="runAnalysis()">✦ 啟動全量法規與資安鑑定</button>
+                </div>
             </div>
-            <div class="analysis-cell">
-                <div class="cell-header"><span class="cell-title">▸ 刑事與行政判定</span></div>
-                <div id="panel2" class="result-content"><div class="loader">等待輸入...</div></div>
-            </div>
-            <div class="analysis-cell">
-                <div class="cell-header"><span class="cell-title">▸ 程序與強制處分指引</span></div>
-                <div id="panel3" class="result-content"><div class="loader">等待輸入...</div></div>
-            </div>
-            <div class="analysis-cell">
-                <div class="cell-header"><span class="cell-title">▸ 證據清單與移送建議</span></div>
-                <div id="panel4" class="result-content"><div class="loader">等待輸入...</div></div>
+        </div>
+
+        <div class="col-output">
+            <div class="card" style="flex:1;">
+                <div class="card-header"><span class="card-label">Legal Analysis / 深度分析鑑定報告</span></div>
+                <div id="resultArea"><div class="loader"><p style="font-size:12px;">等待資料輸入中...</p></div></div>
+                <div style="padding:15px;background:var(--sur2);border-top:1px solid var(--bor);">
+                    <button class="btn-ai" style="padding:10px;font-size:12px;" onclick="exportWord()">匯出鑑定報告 (.docx)</button>
+                </div>
             </div>
         </div>
     </main>
@@ -117,25 +99,24 @@ window.onload = () => { if (!savedKey) document.getElementById('apiModal').style
 function saveKey() {
     const k = document.getElementById('keyInput').value.trim();
     if (k.startsWith('gsk_')) { localStorage.setItem('groq_api_key', k); savedKey = k; document.getElementById('apiModal').style.display = 'none'; }
-    else { alert("Key 格式錯誤"); }
+    else { alert("格式錯誤"); }
 }
 function resetKey() { localStorage.removeItem('groq_api_key'); location.reload(); }
 
 async function runAnalysis() {
     const text = document.getElementById("userInput").value.trim();
-    if(!text) return alert("請輸入分析內容");
-    const btn = document.getElementById("runBtn");
-    btn.disabled = true;
+    if(!text) return alert("請輸入內容");
+    
+    const resArea = document.getElementById("resultArea");
+    resArea.innerHTML = `<div class="loader"><div class="spin"></div><p style="font-size:13px;color:var(--gold2);">對照 114年資安新規與軍法庫中...</p></div>`;
 
-    [1,2,3,4].forEach(i => document.getElementById(`panel${i}`).innerHTML = `<div class="loader"><div class="spin"></div><p style="font-size:11px;">全量法規庫檢索中...</p></div>`);
+    const sysPrompt = `你是一位司法警察專家。請對案情進行【並列且同步】的鑑定：
+1. 【資安鑑定】：必須嚴格參照《114年8月國軍資通安全獎懲規定》。針對私帶手機、大陸機、未裝MDM等，給予申誡、記過、大過級距建議。
+2. 【刑事鑑定】：同步檢索《刑法》與《陸海空軍刑法》。
+3. 【特別法】：包含毒品條例、國安法、貪污治罪條例。
+4. 【程序】：依據《刑訴法》提供指引。
 
-    const sysPrompt = `你是一位司法警察專家。請對案情進行【並列且同步】的鑑定，必須完整掃描以下法規：
-1. 【刑責鑑定】：同步檢索《刑法》與《陸海空軍刑法》，判定罪名。
-2. 【特別法鑑定】：包含《毒品危害防制條例》、《國家機密保護法》、《貪污治罪條例》等。
-3. 【行政違失鑑定】：對照《114年8月國軍資通安全獎懲規定》及《國防部組織法》。針對私帶手機、大陸機、未裝MDM、行政過失等，給予申誡、記過、大過級距建議。
-4. 【程序鑑定】：依據《刑事訴訟法》提供偵查程序、強制處分與法定期限指引。
-
-請產出 JSON 格式：{ "strategy": "...", "law": "...", "procedure": "...", "evidence": "..." }`;
+請條列重點，並以專業公文口吻回覆。`;
 
     try {
         const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -144,19 +125,20 @@ async function runAnalysis() {
             body: JSON.stringify({
                 model: "llama-3.3-70b-versatile",
                 messages: [{role: "system", content: sysPrompt}, {role: "user", content: text}],
-                response_format: { type: "json_object" },
                 temperature: 0.2
             })
         });
         const data = await resp.json();
-        const res = JSON.parse(data.choices[0].message.content);
-        
-        document.getElementById("panel1").innerText = res.strategy;
-        document.getElementById("panel2").innerText = res.law;
-        document.getElementById("panel3").innerText = res.procedure;
-        document.getElementById("panel4").innerText = res.evidence;
-    } catch (e) { alert("分析失敗，請檢查 Key 或網路設定。"); }
-    finally { btn.disabled = false; }
+        resArea.innerHTML = `<div style="padding:10px;white-space:pre-wrap;line-height:1.8;color:#d1d5db;">${data.choices[0].message.content}</div>`;
+    } catch (e) { resArea.innerHTML = `<p style="color:var(--red);padding:20px;">分析失敗。</p>`; }
+}
+
+async function exportWord() {
+    const content = document.getElementById("resultArea").innerText;
+    const { Document, Packer, Paragraph } = docx;
+    const doc = new Document({ sections: [{ children: [new Paragraph({ text: "司法警察鑑定報告" }), new Paragraph({ text: content })] }] });
+    const blob = await Packer.toBlob(doc);
+    saveAs(blob, `智慧偵詢報告.docx`);
 }
 </script>
 </body>
